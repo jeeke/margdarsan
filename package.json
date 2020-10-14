@@ -5,6 +5,9 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": "10.x"
+  },
   "scripts": {
     "prestart": "export NODE_ENV=production",
     "start": "node main"
