@@ -1,52 +1,41 @@
-import {
-  BaseEntity,
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  Unique
-} from "typeorm";
-import * as bcrypt from "bcryptjs";
+import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {OneToOne, Timestamp} from "typeorm/index";
+import {User} from "../auth/user.entity";
 
 @Entity()
-@Unique(['username'])
 export class Student extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  username: string;
+    @OneToOne(type => User, user => user.student)
+    user: User;
 
-  @Column()
-  password: string;
+    @Column({nullable: true})
+    paid_at: Date;
 
-  @Column()
-  ancestor_id: number;
+    @Column({nullable: true})
+    age_group: string;
 
-  @Column()
-  ancestry: string;
+    @Column({nullable: true})
+    interests: string;
 
-  @Column({ nullable: true })
-  salt: string;
+    @Column()
+    ancestor_id: number;
 
-  @Column({ nullable: true })
-  paid_timestamp: string;
+    @Column()
+    ancestry: string;
 
-  @Column({ nullable: true })
-  name: string;
+    toSignedInStudent(): SignedInStudent {
+        return {
+            age_group: this.age_group,
+            interests: this.interests,
+            paid_at: this.paid_at
+        }
+    }
+}
 
-  @Column({ nullable: true })
-  grade: string;
-
-  @Column({ nullable: true })
-  school: string;
-
-  @Column({ nullable: true })
-  area: String;
-
-  async validatePassword(password: string): Promise<boolean> {
-    if (this.salt) {
-      const hash = await bcrypt.hash(password, `${this.salt}`);
-      return hash === this.password;
-    } else return password === this.password;
-  }
+export interface SignedInStudent {
+    age_group: string,
+    interests: string,
+    paid_at: Date
 }

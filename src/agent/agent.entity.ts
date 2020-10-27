@@ -1,46 +1,49 @@
-import {
-  BaseEntity,
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  Unique
-} from "typeorm";
-import { PrimaryColumn } from "typeorm/index";
+import {BaseEntity, Column, Entity, PrimaryGeneratedColumn, Unique} from "typeorm";
+import {OneToOne} from "typeorm/index";
+import {User} from "../auth/user.entity";
 
 @Entity()
-@Unique(["username","phone"])
 export class Agent extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  username: string;
+    @OneToOne(type => User, user => user.agent)
+    user: User;
 
-  @Column()
-  phone: string;
+    @Column()
+    balance: number;
 
-  @Column()
-  name: string;
+    @Column()
+    level: number;
 
-  @Column()
-  balance: number;
+    @Column()
+    height: number;
 
-  @Column()
-  level: number;
+    @Column({nullable: true})
+    sub_agents: number;
 
-  @Column()
-  height: number;
+    @Column({nullable: true})
+    paid_students: number;
 
-  @Column({ nullable: true })
-  sub_agents: number;
+    @Column()
+    ancestor_id: number;
 
-  @Column({ nullable: true })
-  paid_students: number;
+    @Column()
+    ancestry: string;
 
-  @Column()
-  ancestor_id: number;
+    toSignedInAgent(): SignedInAgent {
+        return {
+            balance: this.balance,
+            level: this.level,
+            sub_agents: this.sub_agents,
+            paid_students: this.paid_students
+        }
+    }
+}
 
-  @Column()
-  ancestry: string;
-
+export interface SignedInAgent {
+    balance: number,
+    level: number,
+    sub_agents: number,
+    paid_students: number
 }

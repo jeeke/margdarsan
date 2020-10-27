@@ -6,10 +6,12 @@ import { typeOrmConfig } from './config/typeorm.config';
 import { AgentModule } from './agent/agent.module';
 import { StudentService } from './student/student.service';
 import { StudentModule } from './student/student.module';
+import { AuthService } from './auth/auth.service';
+import {AuthModule} from "./auth/auth.module";
 
 @Module({
-  imports: [TypeOrmModule.forRoot(typeOrmConfig), AgentModule, StudentModule],
+  imports: [TypeOrmModule.forRoot(typeOrmConfig), AgentModule, StudentModule, AuthModule],
   controllers: [AppController],
-  providers: [AppService, StudentService],
+  providers: [AppService, StudentService, AuthService],
 })
 export class AppModule {}

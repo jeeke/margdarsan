@@ -12,6 +12,9 @@ export class WithdrawDto {
   amount: number;
 
   @IsString()
+  upi_id: string;
+
+  @IsString()
   remark: string;
 
 }

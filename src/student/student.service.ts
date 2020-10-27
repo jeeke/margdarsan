@@ -1,33 +1,34 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { StudentRepository } from "./student.repository";
-import { JwtPayload, UserType } from "./jwt-payload.interface";
-import { JwtService } from "@nestjs/jwt";
-import { StudentInitializationDto } from "./student-initialization.dto";
+import {ConflictException, Injectable, Logger} from "@nestjs/common";
+import {InjectRepository} from "@nestjs/typeorm";
+import {StudentRepository} from "./student.repository";
+import {User} from "../auth/user.entity";
+import {Darshika} from "./darshika.entity";
+import {Between} from "typeorm/index";
 
 @Injectable()
 export class StudentService {
-  constructor(
-    @InjectRepository(StudentRepository)
-    private repository: StudentRepository,
-    private jwtService: JwtService
-  ) {
-  }
+    constructor(
+        @InjectRepository(StudentRepository)
+        private repository: StudentRepository
+    ) {
+    }
 
-  private logger = new Logger("StudentService");
+    private logger = new Logger("StudentService");
 
-  async login(username: string, password: string) {
-    const user = await this.repository.validateUserPassword(username, password);
-    const loggedInUsername = user.username;
-    const payload: JwtPayload = { username: loggedInUsername, phone: null, user_type: UserType.Student };
-    const token = await this.jwtService.sign(payload);
-    this.logger.debug(
-      `Generated JWT Token with payload ${JSON.stringify(payload)}`
-    );
-    return { ...user, token };
-  }
+    // initializeStudent(studentInitDto: StudentInitializationDto) {
+    //   return this.repository.updateDetails(studentInitDto);
+    // }
 
-  initializeStudent(studentInitDto: StudentInitializationDto) {
-    return this.repository.updateDetails(studentInitDto);
-  }
+    getDarshikas(user: User) {
+        const begin = user.student.paid_at;
+        if (!begin) throw new ConflictException("Subscription not active");
+        const end = user.student.paid_at;
+        end.setFullYear(end.getFullYear() + 1);
+        return Darshika.find({
+            where: {
+                created_at: Between(begin, end)
+            },
+            select: ["title", "link", "created_at"]
+        })
+    }
 }

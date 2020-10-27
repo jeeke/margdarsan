@@ -26,6 +26,9 @@ export class Transaction extends BaseEntity {
   @Column()
   txn_time: string;
 
+  @Column({nullable: true})
+  upi_id: string;
+
   @Column()
   txn_code: string;
 

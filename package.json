@@ -41,7 +41,6 @@
     "config": "3.3.1",
     "express-formidable": "^1.2.0",
     "firebase-admin": "^9.2.0",
-    "generate-password": "^1.5.1",
     "passport": "0.4.1",
     "passport-jwt": "4.0.0",
     "pg": "8.3.0",
