@@ -36,10 +36,16 @@ export class User extends BaseEntity {
     @JoinColumn()
     student?: Student;
 
-    toSignedInUser( userType: string, initialized: boolean): SignedInUser {
+    @Column({nullable: true})
+    is_admin: boolean;
+
+    toSignedInUser(userType: string, initialized: boolean): SignedInUser {
         let a = null, s = null;
-        if((userType === UserType.Agent && this.student) || (userType === UserType.Student && this.agent)){
-            throw new ConflictException("Please use different phone number!");
+        if (userType === UserType.Agent && this.student) {
+            throw new ConflictException("Please Login as Student!");
+        }
+        if (userType === UserType.Student && this.agent) {
+            throw new ConflictException("Please Login as Agent!");
         }
         if (userType === UserType.Agent) {
             a = this.agent.toSignedInAgent();

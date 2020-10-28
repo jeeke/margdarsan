@@ -9,6 +9,8 @@ import StudentResource from "./resources/student.resource";
 import TxnResource from "./resources/txn.resource";
 import UserResource from "./resources/user.resource";
 import DarshikaResource from "./resources/darshika.resource";
+import {User} from "../auth/user.entity";
+import * as bcrypt from "bcryptjs"
 
 export async function setupAdminPanel(app: INestApplication): Promise<void> {
 
@@ -21,7 +23,24 @@ export async function setupAdminPanel(app: INestApplication): Promise<void> {
         rootPath: "/admin"
     });
 
-    const router = AdminBroExpress.buildRouter(adminBro);
+    // const router = AdminBroExpress.buildRouter(adminBro);
+    const router = AdminBroExpress.buildAuthenticatedRouter(adminBro, {
+        authenticate: async (username, password) => {
+            const user = await User.findOne({
+                where: {
+                    username: username
+                }
+            })
+            if (user && user.is_admin) {
+                const matched = await bcrypt.compare(password, user.phone)
+                if (matched ) {
+                    return user
+                }
+            }
+            return false
+        },
+        cookiePassword: 'sgfdgb546wq4534vadsgvew43',
+    })
     app.use(adminBro.options.rootPath, router);
 
 }
