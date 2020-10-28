@@ -19,10 +19,8 @@ export class Agent extends BaseEntity {
     @Column()
     height: number;
 
-    @Column({nullable: true})
     sub_agents: number;
 
-    @Column({nullable: true})
     paid_students: number;
 
     @Column()
