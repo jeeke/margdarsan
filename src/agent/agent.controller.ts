@@ -22,13 +22,13 @@ export class AgentController {
 
     @UseGuards(JwtAuthGuard)
     @Get("unactivated-students")
-    getUnactivatedStudents(@GetUser() agent: Agent) {
+    getUnactivatedStudents(@GetUser() agent: User) {
         return this.agentService.getUnactivatedStudents(agent);
     }
 
     @UseGuards(JwtAuthGuard)
     @Get("activated-students")
-    getActivatedStudents(@GetUser() agent: Agent) {
+    getActivatedStudents(@GetUser() agent: User) {
         return this.agentService.getActivatedStudents(agent);
     }
 
@@ -40,7 +40,7 @@ export class AgentController {
 
     @UseGuards(JwtAuthGuard)
     @Post("deposit")
-    deposit(@GetUser() agent: Agent, @Body(ValidationPipe) depositDto: DepositDto) {
+    deposit(@GetUser() agent: User, @Body(ValidationPipe) depositDto: DepositDto) {
         return this.agentService.deposit(agent, depositDto);
     }
 
@@ -52,7 +52,7 @@ export class AgentController {
 
     @UseGuards(JwtAuthGuard)
     @Get("txns")
-    getTxns(@GetUser() agent: Agent) {
+    getTxns(@GetUser() agent: User) {
         return this.agentService.getTxns(agent);
     }
 

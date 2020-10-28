@@ -37,11 +37,11 @@ export class AgentService {
         return r;
     }
 
-    getUnactivatedStudents(agent: Agent) {
+    getUnactivatedStudents(agent: User) {
         return this.studentRepository.getUnActivatedStudents(agent.id);
     }
 
-    getActivatedStudents(agent: Agent) {
+    getActivatedStudents(agent: User) {
         return this.studentRepository.getActivatedStudents(agent.id);
     }
 
@@ -60,7 +60,7 @@ export class AgentService {
         return this.txnRepository.withdraw(agent, withdrawDto.amount, withdrawDto.upi_id, withdrawDto.remark);
     }
 
-    deposit(agent: Agent, depositDto: DepositDto) {
+    deposit(agent: User, depositDto: DepositDto) {
         return this.txnRepository.deposit(agent, depositDto.amount, depositDto.txn_time, depositDto.txn_code, depositDto.remark);
     }
 
@@ -89,7 +89,7 @@ export class AgentService {
         });
     }
 
-    getTxns(agent: Agent) {
+    getTxns(agent: User) {
         return this.txnRepository.getTxns(agent);
     }
 }

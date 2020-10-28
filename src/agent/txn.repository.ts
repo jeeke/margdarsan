@@ -8,7 +8,7 @@ import {User} from "../auth/user.entity";
 export class TxnRepository extends Repository<Transaction> {
     private logger = new Logger("AgentRepository");
 
-    deposit(agent: Agent, amount: number, txn_time: string, txn_code: string, remark: string) {
+    deposit(agent: User, amount: number, txn_time: string, txn_code: string, remark: string) {
         const txn = new Transaction();
         txn.agent_id = agent.id;
         txn.amount = amount;
@@ -31,14 +31,14 @@ export class TxnRepository extends Repository<Transaction> {
         return txn.save();
     }
 
-    async getTxns(agent: Agent) {
+    async getTxns(user: User) {
         return {
             txns: await Transaction.find({
                 where: {
-                    agent_id: agent.id
+                    agent_id: user.id
                 }
             }),
-            balance: agent.balance
+            balance: user.agent.balance
         };
     }
 }
