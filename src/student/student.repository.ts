@@ -7,19 +7,6 @@ import {IsNull, Not} from "typeorm/index";
 export class StudentRepository extends Repository<Student> {
     private logger = new Logger("StudentRepository");
 
-    // async validateUserPassword(username: string, password: string) {
-    //   const student = await Student.findOne({
-    //     where: {
-    //       username: username
-    //     }
-    //   });
-    //   if (student && await student.validatePassword(password)) {
-    //     const { id, password, ancestry, salt, ...result } = student;
-    //     const initialized = salt != null;
-    //     return { ...result, initialized };
-    //   } else throw new UnauthorizedException("Invalid Credentials!");
-    // }
-
     async getPaidStudents(agentId: number) {
         const s = await Student.find({
             where: {

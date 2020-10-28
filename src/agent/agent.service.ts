@@ -7,8 +7,9 @@ import {TxnRepository} from "./txn.repository";
 import {DepositDto} from "./dto/deposit.dto";
 import {WithdrawDto} from "./dto/withdraw.dto";
 import {Student} from "../student/student.entity";
-import {Connection} from "typeorm/index";
+import {Connection, Like} from "typeorm/index";
 import {User} from "../auth/user.entity";
+import {UserType} from "../auth/jwt-payload.interface";
 
 @Injectable()
 export class AgentService {
@@ -19,6 +20,20 @@ export class AgentService {
         private txnRepository: TxnRepository,
         private connection: Connection
     ) {
+    }
+
+    async getDetails(user: User) {
+        const team_size = await Agent.createQueryBuilder("agent").where({
+            ancestry: Like(`%/${user.id}/%`)
+        }).getCount()
+        const student_count = await Student.createQueryBuilder("student").where({
+            ancestry: Like(`%/${user.id}/%`)
+        }).getCount()
+
+        const r = user.toSignedInUser(UserType.Agent, !!user.agent)
+        r.agent.paid_students = student_count
+        r.agent.sub_agents = team_size
+        return r;
     }
 
     getUnactivatedStudents(agent: Agent) {

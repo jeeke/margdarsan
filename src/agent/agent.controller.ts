@@ -7,7 +7,6 @@ import {WithdrawDto} from "./dto/withdraw.dto";
 import {agent} from "supertest";
 import {JwtAuthGuard} from "../auth/jwt-auth.guard";
 import {User} from "../auth/user.entity";
-import {UserType} from "../auth/jwt-payload.interface";
 
 @Controller("agent")
 export class AgentController {
@@ -18,7 +17,7 @@ export class AgentController {
     @UseGuards(JwtAuthGuard)
     @Get("details")
     getDetails(@GetUser() user: User) {
-        return user.toSignedInUser(UserType.Agent, !!user.agent)
+        return this.agentService.getDetails(user);
     }
 
     @UseGuards(JwtAuthGuard)

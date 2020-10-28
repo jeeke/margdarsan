@@ -68,11 +68,10 @@ export class AuthService {
         });
         if (ancestor && ancestor.agent) {
             agent.ancestor_id = ancestor.id;
-            agent.ancestry = `${ancestor.agent.ancestry}/${ancestor.id}`;
+            agent.ancestry = `${ancestor.agent.ancestry}${ancestor.id}/`;
             agent.height = ancestor.agent.height + 1;
             ancestor.agent.sub_agents = ancestor.agent.sub_agents + 1;
-        } else
-            throw new BadRequestException("Invalid Referral Code")
+        } else throw new BadRequestException("Invalid Referral Code")
         //     {
         //     agent.ancestor_id = -1;
         //     agent.ancestry = '';
@@ -139,7 +138,7 @@ export class AuthService {
             user.otp = passwords[i];
             const student = new Student();
             student.ancestor_id = currentUser.id;
-            student.ancestry = `${currentUser.agent.ancestry}/${currentUser.id}`;
+            student.ancestry = `${currentUser.agent.ancestry}${currentUser.id}/`;
             user.student = student;
             newUsers.push(user);
         }
