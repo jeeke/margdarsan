@@ -10,7 +10,7 @@ export class TxnRepository extends Repository<Transaction> {
 
     deposit(agent: User, amount: number, txn_time: string, txn_code: string, remark: string) {
         const txn = new Transaction();
-        txn.user_id = agent.id;
+        txn.agent_id = agent.agent.id;
         txn.amount = amount;
         txn.txn_time = txn_time;
         txn.txn_code = txn_code;
@@ -21,7 +21,7 @@ export class TxnRepository extends Repository<Transaction> {
 
     withdraw(agent: User, amount: number, upi_id: string, remark: string) {
         const txn = new Transaction();
-        txn.user_id = agent.id;
+        txn.agent_id = agent.agent.id;
         txn.amount = -amount;
         txn.upi_id = upi_id
         txn.txn_time = new Date().toDateString();
@@ -35,7 +35,7 @@ export class TxnRepository extends Repository<Transaction> {
         return {
             txns: await Transaction.find({
                 where: {
-                    user_id: user.id
+                    agent_id: user.agent.id
                 }
             }),
             balance: user.agent.balance

@@ -28,7 +28,7 @@ const TxnResource: ResourceWithOptions = {
               }
             };
           }
-          const uid = data.record.param("firebase_uid");
+          const uid = data.record.param("agent_id");
           try {
             await getConnection().transaction(async manager => {
               const txnRepository = manager.getRepository<Transaction>("transaction");
@@ -42,7 +42,7 @@ const TxnResource: ResourceWithOptions = {
               await agentRepository.createQueryBuilder()
                 .update(Agent)
                 .set({ balance: () => `balance + ${data.record.param("amount")}` })
-                .where("agent.firebase_uid = :id", { id: uid })
+                .where("agent.id = :id", { id: uid })
                 .execute();
             });
           } catch (error) {

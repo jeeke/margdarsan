@@ -12,7 +12,7 @@ export class Transaction extends BaseEntity {
     id: number;
 
     @Column()
-    user_id: number;
+    agent_id: number;
 
     @Column()
     amount: number;
