@@ -33,7 +33,9 @@ export class StudentRepository extends Repository<Student> {
             return {
                 username: student.user.username,
                 name: student.user.name,
-                id: student.id
+                student: {
+                    id: student.id
+                }
             }
         })
     }
@@ -53,7 +55,9 @@ export class StudentRepository extends Repository<Student> {
             return {
                 username: student.user.username,
                 otp: student.user.otp,
-                id: student.id
+                student: {
+                    id: student.id
+                }
             }
         })
     }
@@ -72,7 +76,9 @@ export class StudentRepository extends Repository<Student> {
             return {
                 username: student.user.username,
                 name: student.user.name,
-                id: student.id
+                student: {
+                    id: student.id
+                }
             }
         })
     }
