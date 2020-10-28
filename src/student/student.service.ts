@@ -19,16 +19,16 @@ export class StudentService {
     //   return this.repository.updateDetails(studentInitDto);
     // }
 
-    getDarshikas(user: User) {
-        const begin = user.student.paid_at;
-        if (!begin) throw new ConflictException("Subscription not active");
-        const end = user.student.paid_at;
+    async getDarshikas(user: User) {
+        const t = user.student.paid_at.getTime()
+        const begin = new Date(t);
+        const end = new Date(t);
         end.setFullYear(end.getFullYear() + 1);
-        return Darshika.find({
+        if (!begin || !end) throw new ConflictException("Subscription not active");
+        return await Darshika.find({
             where: {
                 created_at: Between(begin, end)
-            },
-            select: ["title", "link", "created_at"]
-        })
+            }
+        });
     }
 }
