@@ -1,7 +1,6 @@
 import {Body, Controller, Get, Post, Query, UseGuards, ValidationPipe} from "@nestjs/common";
 import {GetUser} from "./get-user.decorator";
 import {AgentService} from "./agent.service";
-import {Agent} from "./agent.entity";
 import {DepositDto} from "./dto/deposit.dto";
 import {WithdrawDto} from "./dto/withdraw.dto";
 import {agent} from "supertest";
