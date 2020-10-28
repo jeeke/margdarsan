@@ -2,7 +2,7 @@ import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 
 export const TxnStatus = {
     Processing: "Processing",
-    Declined: "Declined",
+    Declined: "Failed",
     Successful: "Successful"
 }
 

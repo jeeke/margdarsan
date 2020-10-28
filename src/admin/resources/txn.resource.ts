@@ -19,7 +19,7 @@ const TxnResource: ResourceWithOptions = {
             ].join("\n"), "Action#handler");
           }
           const txnStatus = data.record.param("txn_status")
-          if (txnStatus  != 0 ) {
+          if (txnStatus  != TxnStatus.Processing ) {
             return {
               record: data.record.toJSON(data.currentAdmin),
               notice: {
