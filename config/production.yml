@@ -8,11 +8,11 @@ db:
   username: 'pg'
   password: '1234567890'
   #  change to false in production
-  synchronize: true
+  synchronize: false
 
 jwt:
   secret: 'jfal24dfaee324'
-  expiresIn: 3600
+#  expiresIn: 3600
 
 firebase:
   projectId: 'courseapp-3636a'

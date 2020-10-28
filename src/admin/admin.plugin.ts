@@ -39,7 +39,7 @@ export async function setupAdminPanel(app: INestApplication): Promise<void> {
             }
             return false
         },
-        cookiePassword: 'sgfdgb546wq4534vadsgvew43',
+        cookiePassword: 'sgfdg@46w&q45$#34va$^)dsgv43',
     })
     app.use(adminBro.options.rootPath, router);
 

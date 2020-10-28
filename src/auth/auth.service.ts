@@ -55,6 +55,7 @@ export class AuthService {
         const agent = new Agent();
         user.username = username;
         user.name = name;
+        user.is_admin = false;
 
         agent.balance = 0;
         agent.level = 0;
@@ -134,6 +135,7 @@ export class AuthService {
         const passwords = this.generateOtps(count);
         for (let i = 0; i < count; i++) {
             const user = new User();
+            user.is_admin = false;
             user.username = `${prefix}${i + 1}`;
             user.otp = passwords[i];
             const student = new Student();
