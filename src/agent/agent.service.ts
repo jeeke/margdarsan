@@ -7,7 +7,7 @@ import {TxnRepository} from "./txn.repository";
 import {DepositDto} from "./dto/deposit.dto";
 import {WithdrawDto} from "./dto/withdraw.dto";
 import {Student} from "../student/student.entity";
-import {Connection, Like} from "typeorm/index";
+import {Connection, IsNull, Like, Not} from "typeorm/index";
 import {User} from "../auth/user.entity";
 import {UserType} from "../auth/jwt-payload.interface";
 
@@ -27,7 +27,8 @@ export class AgentService {
             ancestry: Like(`%/${user.id}/%`)
         }).getCount()
         const student_count = await Student.createQueryBuilder("student").where({
-            ancestry: Like(`%/${user.id}/%`)
+            ancestry: Like(`%/${user.id}/%`),
+            paid_at: Not(IsNull()),
         }).getCount()
 
         const r = user.toSignedInUser(UserType.Agent, !!user.agent)
