@@ -59,8 +59,8 @@ export class AgentController {
 
     @UseGuards(JwtAuthGuard)
     @Post("activated-students")
-    activateStudents(@GetUser() agent: Agent, @Body("usernames") usernames: string) {
-        return this.agentService.activateStudents(agent, usernames);
+    activateStudents(@GetUser() agent: User, @Body("ids") ids: string) {
+        return this.agentService.activateStudents(agent, ids);
     }
 
     @UseGuards(JwtAuthGuard)

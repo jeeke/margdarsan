@@ -52,18 +52,19 @@ export class AgentService {
         return this.agentRepository.getSubOrdinateAgents(agent, downlineUsername);
     }
 
-    async activateStudents(agent: Agent, usernameString: string) {
-        const usernames = usernameString.split(",");
-        const cost = usernames.length * 360;
-        if (cost > agent.balance) throw new ConflictException("Insufficient Wallet Balance");
+    async activateStudents(agent: User, idString: string) {
+        const ids = idString.split(",");
+        const cost = ids.length * 360;
+        if (cost > agent.agent.balance) throw new ConflictException("Insufficient Wallet Balance");
         return await this.connection.transaction(async manager => {
+
             const studentRepository = manager.getRepository<Student>("student");
             const agentRepository = manager.getRepository<Agent>("agent");
 
             await studentRepository.createQueryBuilder()
                 .update(Student)
                 .set({paid_at: new Date()})
-                .where("student.username IN (:...usernames)", {usernames: usernames})
+                .where("student.id IN (:...ids)", {ids: ids})
                 .execute();
             await agentRepository.createQueryBuilder()
                 .update(Agent)
