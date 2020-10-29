@@ -1,8 +1,9 @@
 import { ResourceWithOptions } from "admin-bro";
-import { Transaction, TxnStatus } from "../../agent/txn.entity";
+import { Transaction } from "../../agent/txn.entity";
 import { NotFoundException } from "@nestjs/common";
 import { Agent } from "../../agent/agent.entity";
 import { getConnection } from "typeorm/index";
+import {TxnStatus} from "../../agent/txn.status";
 
 const TxnResource: ResourceWithOptions = {
   resource: Transaction,

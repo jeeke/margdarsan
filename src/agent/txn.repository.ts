@@ -1,8 +1,9 @@
 import {EntityRepository, Repository} from "typeorm";
 import {Logger} from "@nestjs/common";
 import {Agent} from "./agent.entity";
-import {Transaction, TxnStatus} from "./txn.entity";
+import {Transaction} from "./txn.entity";
 import {User} from "../auth/user.entity";
+import {TxnStatus} from "./txn.status";
 
 @EntityRepository(Agent)
 export class TxnRepository extends Repository<Transaction> {

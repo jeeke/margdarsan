@@ -10,7 +10,8 @@ import {Student} from "../student/student.entity";
 import {Connection, IsNull, Like, Not} from "typeorm/index";
 import {User} from "../auth/user.entity";
 import {UserType} from "../auth/jwt-payload.interface";
-import {Transaction, TxnStatus} from "./txn.entity";
+import {Transaction} from "./txn.entity";
+import {TxnStatus} from "./txn.status";
 
 @Injectable()
 export class AgentService {
