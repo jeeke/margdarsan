@@ -8,7 +8,7 @@ import { TxnRepository } from "./txn.repository";
 import { StudentRepository } from "../student/student.repository";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AgentRepository, TxnRepository]), StudentModule],
+  imports: [TypeOrmModule.forFeature([AgentRepository]), StudentModule],
   controllers: [AgentController],
   providers: [AgentService, AgentRepository, TxnRepository, StudentRepository]
 })

@@ -81,24 +81,24 @@ export class AgentService {
         costTxn.agent_id = agent.agent.id;
         costTxn.amount = -cost;
         costTxn.txn_time = new Date().toDateString();
-        costTxn.remark = `Activation of ${ids.length} students`;
+        costTxn.remark = `Activation of ${ids.length} student`;
         costTxn.txn_status = TxnStatus.Successful;
-        costTxn.txn_code = `Activation of ${idString} students`;
+        costTxn.txn_code = `Activation of ${idString} student`;
 
         const commissionTxn = new Transaction();
         commissionTxn.agent_id = agent.agent.id;
         commissionTxn.amount = +commission;
         commissionTxn.txn_time = new Date().toDateString();
-        commissionTxn.remark = `Commission for activation of ${ids.length} students`;
+        commissionTxn.remark = `Commission - Activation of ${ids.length} student`;
         commissionTxn.txn_status = TxnStatus.Successful;
-        commissionTxn.txn_code = `Commission for activation of ${idString} students`;
+        commissionTxn.txn_code = `Commission - Activation of ${idString} student`;
 
 
         return await this.connection.transaction(async manager => {
 
             const studentRepository = manager.getRepository<Student>("student");
             const agentRepository = manager.getRepository<Agent>("agent");
-            const txnRepo = manager.getRepository<Transaction>("txn");
+            const txnRepo = manager.getRepository<Transaction>("transaction");
 
             await studentRepository.createQueryBuilder()
                 .update(Student)
