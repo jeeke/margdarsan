@@ -53,7 +53,7 @@ export class AuthService {
 
         const {username, name, agentCode} = agentSignUpDto;
         const agent = new Agent();
-        user.username = username;
+        user.username = username.toLowerCase();
         user.name = name;
         user.is_admin = false;
 
@@ -136,7 +136,7 @@ export class AuthService {
         for (let i = 0; i < count; i++) {
             const user = new User();
             user.is_admin = false;
-            user.username = `${prefix}${i + 1}`;
+            user.username = `${prefix.toLowerCase()}${i + 1}`;
             user.otp = passwords[i];
             const student = new Student();
             student.ancestor_id = currentUser.id;

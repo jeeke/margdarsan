@@ -10,6 +10,7 @@ import {Student} from "../student/student.entity";
 import {Connection, IsNull, Like, Not} from "typeorm/index";
 import {User} from "../auth/user.entity";
 import {UserType} from "../auth/jwt-payload.interface";
+import {Transaction, TxnStatus} from "./txn.entity";
 
 @Injectable()
 export class AgentService {
@@ -71,21 +72,46 @@ export class AgentService {
     async activateStudents(agent: User, idString: string) {
         const ids = idString.split(",");
         const cost = ids.length * 360;
+        const commission = ids.length * 120;
+        const diff = ids.length * 240;
         if (cost > agent.agent.balance) throw new ConflictException("Insufficient Wallet Balance");
+
+        const costTxn = new Transaction();
+        costTxn.agent_id = agent.agent.id;
+        costTxn.amount = -cost;
+        costTxn.txn_time = new Date().toDateString();
+        costTxn.remark = `Activation of ${ids.length} students`;
+        costTxn.txn_status = TxnStatus.Successful;
+        costTxn.txn_code = `Activation of ${idString} students`;
+
+        const commissionTxn = new Transaction();
+        commissionTxn.agent_id = agent.agent.id;
+        commissionTxn.amount = +commission;
+        commissionTxn.txn_time = new Date().toDateString();
+        commissionTxn.remark = `Commission for activation of ${ids.length} students`;
+        commissionTxn.txn_status = TxnStatus.Successful;
+        commissionTxn.txn_code = `Commission for activation of ${idString} students`;
+
+
         return await this.connection.transaction(async manager => {
 
             const studentRepository = manager.getRepository<Student>("student");
             const agentRepository = manager.getRepository<Agent>("agent");
+            const txnRepo = manager.getRepository<Transaction>("txn");
 
             await studentRepository.createQueryBuilder()
                 .update(Student)
                 .set({paid_at: new Date()})
                 .where("student.id IN (:...ids)", {ids: ids})
                 .execute();
+
             await agentRepository.createQueryBuilder()
                 .update(Agent)
-                .set({balance: () => `balance - ${cost}`})
+                .set({balance: () => `balance - ${diff}`})
                 .execute();
+
+            await txnRepo.save([costTxn, commissionTxn])
+
         });
     }
 
