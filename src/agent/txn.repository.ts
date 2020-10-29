@@ -37,6 +37,9 @@ export class TxnRepository extends Repository<Transaction> {
             txns: await Transaction.find({
                 where: {
                     agent_id: user.agent.id
+                },
+                order: {
+                    id: "DESC"
                 }
             }),
             balance: user.agent.balance
