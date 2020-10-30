@@ -7,7 +7,7 @@ import {TxnRepository} from "./txn.repository";
 import {DepositDto} from "./dto/deposit.dto";
 import {WithdrawDto} from "./dto/withdraw.dto";
 import {Student} from "../student/student.entity";
-import {Connection, IsNull, Like, Not} from "typeorm/index";
+import {Connection, In, IsNull, Like, Not} from "typeorm/index";
 import {User} from "../auth/user.entity";
 import {UserType} from "../auth/jwt-payload.interface";
 import {Transaction} from "./txn.entity";
@@ -93,12 +93,19 @@ export class AgentService {
         commissionTxn.txn_status = TxnStatus.Successful;
         commissionTxn.txn_code = `Commission - Activation of ${idString} student`;
 
-
         return await this.connection.transaction(async manager => {
 
             const studentRepository = manager.getRepository<Student>("student");
             const agentRepository = manager.getRepository<Agent>("agent");
             const txnRepo = manager.getRepository<Transaction>("transaction");
+
+            const alreadyActivatedStudents = await studentRepository.find({
+                where: {
+                    id: In(ids),
+                    paid_at: Not(IsNull())
+                }
+            });
+            if (alreadyActivatedStudents || alreadyActivatedStudents.length > 0) throw new ConflictException("Some students already activated!, Please reopen app!");
 
             await studentRepository.createQueryBuilder()
                 .update(Student)
