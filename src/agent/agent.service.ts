@@ -99,13 +99,13 @@ export class AgentService {
             const agentRepository = manager.getRepository<Agent>("agent");
             const txnRepo = manager.getRepository<Transaction>("transaction");
 
-            const alreadyActivatedStudents = await studentRepository.find({
-                where: {
-                    id: In(ids),
-                    paid_at: Not(IsNull())
-                }
-            });
-            if (alreadyActivatedStudents || alreadyActivatedStudents.length > 0) throw new ConflictException("Some students already activated!, Please reopen app!");
+            // const alreadyActivatedStudents = await studentRepository.find({
+            //     where: {
+            //         id: In(ids),
+            //         paid_at: Not(IsNull())
+            //     }
+            // });
+            // if (alreadyActivatedStudents || alreadyActivatedStudents.length > 0) throw new ConflictException("Some students already activated!, Please reopen app!");
 
             await studentRepository.createQueryBuilder()
                 .update(Student)
