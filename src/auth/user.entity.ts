@@ -20,7 +20,7 @@ export class User extends BaseEntity {
     name: string;
 
     @Column({nullable: true})
-    otp: number;
+    otp: string;
 
     @OneToOne(type => Agent, {
         eager: true,

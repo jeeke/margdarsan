@@ -132,12 +132,12 @@ export class AuthService {
 
     async generateStudentLogins(currentUser: User, prefix: string, count: number) {
         const newUsers = [];
-        const passwords = this.generateOtps(count);
+        // const passwords = this.generateOtps(count);
         for (let i = 0; i < count; i++) {
             const user = new User();
             user.is_admin = false;
             user.username = `${prefix.toLowerCase()}${i + 1}`;
-            user.otp = passwords[i];
+            user.otp = currentUser.username;
             const student = new Student();
             student.ancestor_id = currentUser.id;
             student.ancestry = `${currentUser.agent.ancestry}${currentUser.id}/`;
@@ -156,9 +156,9 @@ export class AuthService {
         return Math.floor(100000 + Math.random() * 900000);
     }
 
-    generateOtps(count: number) {
-        const otps = [];
-        for (let i = 0; i < count; i++) otps.push(this.generateOtp());
-        return otps;
-    }
+    // generateOtps(count: number) {
+    //     const otps = [];
+    //     for (let i = 0; i < count; i++) otps.push(this.generateOtp());
+    //     return otps;
+    // }
 }
