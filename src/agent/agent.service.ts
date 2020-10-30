@@ -109,6 +109,7 @@ export class AgentService {
             await agentRepository.createQueryBuilder()
                 .update(Agent)
                 .set({balance: () => `balance - ${diff}`})
+                .where("id = :id", {id: agent.agent.id})
                 .execute();
 
             await txnRepo.save([costTxn, commissionTxn])
