@@ -25,3 +25,4 @@ jwt:
 razorpay:
   keyId: 'rzp_live_EwED1ul2Uv65Rt'
   keySecret: 'zR7ogR4hmkJVtKEC5mrcuvWk'
+  webhookSecret: 'sfjfd$jl@*%KJLHFE#$@@$'

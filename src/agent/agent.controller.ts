@@ -2,11 +2,10 @@ import {Body, Controller, Get, Post, Query, UseGuards, ValidationPipe} from "@ne
 import {GetUser} from "./get-user.decorator";
 import {AgentService} from "./agent.service";
 import {WithdrawDto} from "./dto/withdraw.dto";
-import {agent} from "supertest";
 import {JwtAuthGuard} from "../auth/jwt-auth.guard";
 import {User} from "../auth/user.entity";
 
-@Controller("agent")
+@Controller("api/agent")
 export class AgentController {
 
     constructor(private agentService: AgentService) {

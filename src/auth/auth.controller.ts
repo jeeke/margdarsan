@@ -7,7 +7,7 @@ import {JwtAuthGuard} from "./jwt-auth.guard";
 import {GetUser} from "../agent/get-user.decorator";
 import {StudentInitializationDto} from "./dto/student-initialization.dto";
 
-@Controller('user')
+@Controller('api/user')
 export class AuthController {
     constructor(private authService: AuthService) {
     }

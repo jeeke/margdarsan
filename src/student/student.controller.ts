@@ -5,7 +5,7 @@ import {JwtAuthGuard} from "../auth/jwt-auth.guard";
 import {User} from "../auth/user.entity";
 import {UserType} from "../auth/jwt-payload.interface";
 
-@Controller("student")
+@Controller("api/student")
 export class StudentController {
     constructor(private studentService: StudentService) {
     }
