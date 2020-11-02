@@ -1,6 +1,13 @@
 server:
 
 db:
+  type: 'postgres'
+  database: 'postgres'
+  host: 'margdarsandev.c9zchczwypcl.ap-south-1.rds.amazonaws.com'
+  port: 5432
+  username: 'postgres'
+  password: 'postgres'
+  synchronize: false
 #  type: 'postgres'
 #  database: 'new'
 #  host: 'pg.c9zchczwypcl.ap-south-1.rds.amazonaws.com'

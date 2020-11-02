@@ -16,7 +16,6 @@
 # Node.js dependencies:
 
 # compiled output
-dist/
 node_modules/
 
 # Logs
