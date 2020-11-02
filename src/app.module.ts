@@ -1,17 +1,28 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmConfig } from './config/typeorm.config';
-import { AgentModule } from './agent/agent.module';
-import { StudentService } from './student/student.service';
-import { StudentModule } from './student/student.module';
-import { AuthService } from './auth/auth.service';
+import {Module} from '@nestjs/common';
+import {AppController} from './app.controller';
+import {TypeOrmModule} from '@nestjs/typeorm';
+import {typeOrmConfig} from './config/typeorm.config';
+import {AgentModule} from './agent/agent.module';
+import {StudentService} from './student/student.service';
+import {StudentModule} from './student/student.module';
+import {AuthService} from './auth/auth.service';
 import {AuthModule} from "./auth/auth.module";
+import {ServeStaticModule} from "@nestjs/serve-static";
+import { join } from 'path';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(typeOrmConfig), AgentModule, StudentModule, AuthModule],
-  controllers: [AppController],
-  providers: [AppService, StudentService, AuthService],
+    imports: [
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, '..', 'public'),
+            exclude: ['/api*'],
+        }),
+        TypeOrmModule.forRoot(typeOrmConfig),
+        AgentModule,
+        StudentModule,
+        AuthModule
+    ],
+    controllers: [AppController],
+    providers: [StudentService, AuthService],
 })
-export class AppModule {}
+export class AppModule {
+}

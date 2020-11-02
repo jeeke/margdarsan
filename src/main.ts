@@ -13,13 +13,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   await setupAdminPanel(app);
 
-  const options = new DocumentBuilder()
-    .setTitle("MargDarshan")
-    .setDescription("MargDarshan REST API description")
-    .setVersion("1.0")
-    .build();
-  const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup("api", app, document);
+  if(process.env.NODE_ENV === 'development'){
+      const options = new DocumentBuilder()
+          .setTitle("MargDarshan")
+          .setDescription("MargDarshan REST API description")
+          .setVersion("1.0")
+          .build();
+      const document = SwaggerModule.createDocument(app, options);
+      SwaggerModule.setup("api/docs", app, document);
+  }
 
   const firebaseConfig = config.get("firebase");
   const adminConfig: ServiceAccount = {
