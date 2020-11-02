@@ -1,6 +1,7 @@
-import {BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Timestamp} from "typeorm/index";
+import {BaseEntity, Column, Entity, PrimaryGeneratedColumn, Unique, UpdateDateColumn} from "typeorm/index";
 
 @Entity()
+@Unique(["serial_no"])
 export class Darshika extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
@@ -11,6 +12,9 @@ export class Darshika extends BaseEntity {
     @Column()
     link: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+    @Column()
+    serial_no: number;
+
+    @UpdateDateColumn()
+    updated_at: Date;
 }

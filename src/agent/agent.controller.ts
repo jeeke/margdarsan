@@ -1,7 +1,6 @@
 import {Body, Controller, Get, Post, Query, UseGuards, ValidationPipe} from "@nestjs/common";
 import {GetUser} from "./get-user.decorator";
 import {AgentService} from "./agent.service";
-import {DepositDto} from "./dto/deposit.dto";
 import {WithdrawDto} from "./dto/withdraw.dto";
 import {agent} from "supertest";
 import {JwtAuthGuard} from "../auth/jwt-auth.guard";
@@ -20,27 +19,21 @@ export class AgentController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get("unactivated-students")
-    getUnactivatedStudents(@GetUser() agent: User) {
-        return this.agentService.getUnactivatedStudents(agent);
+    @Get("activation-requests")
+    getActivationRequests(@GetUser() agent: User) {
+        return this.agentService.getActivationRequests(agent);
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get("activated-students")
-    getActivatedStudents(@GetUser() agent: User) {
-        return this.agentService.getActivatedStudents(agent);
+    @Post("deposit/init")
+    initDeposit(@GetUser() user: User, @Body("amount") amount: number) {
+        return this.agentService.initializeDeposit(user, amount);
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get("paid-students")
-    getPaidStudents(@GetUser() agent: User, @Query("downline_username") downlineUsername: string) {
-        return this.agentService.getPaidStudents(agent, downlineUsername);
-    }
-
-    @UseGuards(JwtAuthGuard)
-    @Post("deposit")
-    deposit(@GetUser() agent: User, @Body(ValidationPipe) depositDto: DepositDto) {
-        return this.agentService.deposit(agent, depositDto);
+    @Post("deposit/success")
+    deposit(@GetUser() user: User, @Body() paymentResponse) {
+        return this.agentService.onDepositSuccess(user,paymentResponse);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -63,7 +56,7 @@ export class AgentController {
 
     @UseGuards(JwtAuthGuard)
     @Get("sub-agents")
-    getSubOrdinateAgents(@GetUser() agent: User, @Query("downline_username") downlineUsername: string) {
-        return this.agentService.getSubOrdinateAgents(agent, downlineUsername);
+    getSubOrdinateAgents(@GetUser() agent: User, @Query("downline_agent_id") downlineAgentId: number) {
+        return this.agentService.getSubOrdinateAgents(agent, downlineAgentId);
     }
 }

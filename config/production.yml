@@ -1,21 +1,19 @@
 server:
 
 db:
-  type: 'postgres'
-  database: 'new'
-  host: 'pg.c9zchczwypcl.ap-south-1.rds.amazonaws.com'
-  port: 5432
-  username: 'pg'
-  password: '1234567890'
-  #  change to false in production
-  synchronize: false
+#  type: 'postgres'
+#  database: 'new'
+#  host: 'pg.c9zchczwypcl.ap-south-1.rds.amazonaws.com'
+#  port: 5432
+#  username: 'pg'
+#  password: '1234567890'
+#  #  change to false in production
+#  synchronize: false
 
 jwt:
   secret: 'jfal24dfaee324'
 #  expiresIn: 3600
 
-firebase:
-  projectId: 'courseapp-3636a'
-  privateKey: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDcP8Gr+3rdf2+B\n+YauuzvDln0J0Xdqai6N5dxjzMNiMoa/hRiP7SxfSyFnA5wHd5rZ9R9DFOZoJjYd\nSDrgXfBeLCE4WAcaf7EE73PwFvDVTpVlbxXPC+iQ7xsD1bm1+TQPs1FkNOqQ+FR0\nz/dbcLdyfCFpAmm7KeI5sJstTiPFyWPldHYIST/u6Kz82dl03SkwhhH5M9SC7ijR\ndpiCQGo0zMvhqqXkoeDao01/pTNMvGSLLm4YuLtPBWfNwfUgPKY6cXIyGQYOHD3H\n0506WuHKNQ4Mi5zuUJ01pVFcojGK+j6IKrTYQ3C/OF/N7+CUR4qKK07RsV91FXAW\nPXi+UNaXAgMBAAECggEARkDd/YZHYCy8fEiEEesuOoqfksiqXxrEg8WcwYa4kfOM\n8L07IvmjrDfSTUIk/GrFzZ03HhYmEnWR0FBQW24LdHZ+GDNX/LdbVzgsEpq2skuR\nMtw2qCbjxYtHYjdDuAxn81Qe86g/ZAOaKPKHM7cmBNIcdBrtb+KBwyYWsWJZ3cXy\nYiHqQCzV95wlXaNy2RcGiqPu7yPt6O41zxhgfBzPdvlUpd311kzZHeqNjUHBJl/h\n0ro/lXLWIdrnTZwV/Zn2atmoM1bbnPCDHIokjD0Uq6Xetkh22vxZys/9qmLtM26B\nYWI3v+OE8xXATSB2oI2pN+Uz5kBZ7mdfvWV/uGC3BQKBgQDxnggPiPsgMkND21fs\nklxPZzybYkO8lX3NTtGoe8k7qrRtDjOgiV5wm4o4yhd8rXTkKk95+jd/FD6mUGbj\n75O2VzDkm+InXXzGdFrW66rMDxX8sepIZFwAV0/qNXItdDvVmfnlnd3fgvvOTxa6\nX7zqEmmeHNFWszvzSKian6pq+wKBgQDpXBjxtep4E0Ytu8ZWtaWsYB4ALKSO+WVT\nrNehLz9vsRI1h4/V1QGlnj+k+85bHHJtkSNn5ewhjhrhAUj44qC+gE7vgdYD+dKl\n+inaZ6AlyftJRKVrM3bldjaV8nqbNuMv+yI3b4FM/gR55gyws/vdInaILBtbyHok\nqgDjwSUwFQKBgA15mct8AT1ncDbtmba45usKv+eOkGaJE84KckjqNmvcdlmKrDhs\n0NaI5imKo8qxRc6fyXTtDoFI2MGfxE08BEnsDO8C/pbhcN8EiDhqRklBIiHIrl9B\nMZxXQj62olqEm/2qq7QxnLklbfOwl3znb/rB8h/+TXJ/Zn2H9NdCxldXAoGAASkq\nHpmvDuXZpYSXmfrRVigsPgf60ZNAA8iKUgzwHdgdpRKFjqS+m1pMKr/t6NodX5on\nOO8V25zfWVsuR76o2gm9WsekjuSBPb4e0y1MyKNWkqi6wevBnaaW4uwP3BHL04NG\nSkxNslpZH1obmg1rJVB0knzVrgEzSldmJbviOXkCgYEAmr9Qu9ZmrQ1+mJWfLiSj\nDLpi6kQMQZJHTWU1CBR6Qur9M2tdD8VftqzpSfsetQMrMvzl254dRaFYc1lveBX0\n+ipMJuvZ59CrBzJCBWJU/YBOBkveWiRr2P8lPBJoktqTM11kzUQB6z2cnXXtOyIc\nziTxB1HJyll4meQBMWaj4qY=\n-----END PRIVATE KEY-----\n"
-  clientEmail: "firebase-adminsdk-8r9q8@courseapp-3636a.iam.gserviceaccount.com"
-  databaseURL: "https://courseapp-3636a.firebaseio.com"
+razorpay:
+  keyId: 'rzp_live_EwED1ul2Uv65Rt'
+  keySecret: 'zR7ogR4hmkJVtKEC5mrcuvWk'

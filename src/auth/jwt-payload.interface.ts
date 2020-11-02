@@ -1,5 +1,4 @@
 export interface JwtPayload {
-    username: string;
     phone: string;
     user_type: string;
     initialized: boolean;
@@ -8,4 +7,5 @@ export interface JwtPayload {
 export const UserType = {
     Agent: "agent",
     Student: "student"
+    // Admin: "admin"
 }

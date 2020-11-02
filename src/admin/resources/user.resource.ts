@@ -3,12 +3,10 @@ import {User} from "../../auth/user.entity";
 import * as bcrypt from "bcryptjs"
 
 const middleware = async (request) => {
-    if (request.payload.phone) {
-        if(request.payload.is_admin) {
-            request.payload = {
-                ...request.payload,
-                phone: await bcrypt.hash(request.payload.phone, 10),
-            }
+    if (request.payload.admin_password && request.payload.is_admin) {
+        request.payload = {
+            ...request.payload,
+            admin_password: await bcrypt.hash(request.payload.admin_password, 10),
         }
     }
     return request
@@ -16,7 +14,7 @@ const middleware = async (request) => {
 const UserResource: ResourceWithOptions = {
     resource: User,
     options: {
-        listProperties: ['id', 'username', 'phone', 'name'],
+        listProperties: ['id', 'phone', 'is_admin'],
         actions: {
             new: {
                 before: middleware,

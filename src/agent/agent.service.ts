@@ -1,10 +1,9 @@
-import {ConflictException, Injectable, UnauthorizedException} from "@nestjs/common";
+import {BadRequestException, ConflictException, Injectable} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {AgentRepository} from "./agent.repository";
 import {Agent} from "./agent.entity";
 import {StudentRepository} from "../student/student.repository";
 import {TxnRepository} from "./txn.repository";
-import {DepositDto} from "./dto/deposit.dto";
 import {WithdrawDto} from "./dto/withdraw.dto";
 import {Student} from "../student/student.entity";
 import {Connection, In, IsNull, Like, Not} from "typeorm/index";
@@ -12,6 +11,11 @@ import {User} from "../auth/user.entity";
 import {UserType} from "../auth/jwt-payload.interface";
 import {Transaction} from "./txn.entity";
 import {TxnStatus} from "./txn.status";
+import * as Razorpay from "razorpay";
+import * as config from 'config';
+import * as crypto from "crypto";
+
+const RazorpayConfig = config.get('razorpay');
 
 @Injectable()
 export class AgentService {
@@ -39,22 +43,60 @@ export class AgentService {
         return r;
     }
 
-    getUnactivatedStudents(agent: User) {
-        return this.studentRepository.getUnActivatedStudents(agent.id);
+    getActivationRequests(user: User) {
+        return this.studentRepository.getActivationRequests(user.agent.id);
     }
 
-    getActivatedStudents(agent: User) {
-        return this.studentRepository.getActivatedStudents(agent.id);
+    async initializeDeposit(user: User, amount: number) {
+        if(amount <= 0) throw new BadRequestException('Amount must be greater than zero!')
+        const instance = new Razorpay({key_id: RazorpayConfig.keyId, key_secret: RazorpayConfig.keySecret});
+        const options = {
+            amount: amount * 100,
+            currency: "INR"
+        };
+        const order = await instance.orders.create(options);
+        const txn = new Transaction();
+        txn.agent_id = user.agent.id;
+        txn.amount = +amount;
+        txn.txn_time = new Date().toDateString();
+        txn.remark = `Deposit ${amount}`;
+        txn.txn_status = TxnStatus.Processing;
+        txn.txn_code = order.id;
+        await txn.save();
+        return order;
     }
 
-    async getPaidStudents(agent: User, downlineUsername: string) {
-        let downline;
-        if (!downlineUsername || downlineUsername === agent.username) {
-            downline = agent;
-        } else downline = await this.agentRepository.getUserIfDownline(agent, downlineUsername);
-        if (downline) {
-            return this.studentRepository.getPaidStudents(downline.id);
-        } else throw new UnauthorizedException("Network not Accessible");
+    async verifyRazorpaySignature(payment_response) {
+        const hmac = await crypto.createHmac('sha256', RazorpayConfig.keySecret);
+        hmac.update(payment_response.order_id + "|" + payment_response.payment_id);
+        const generatedSignature = await hmac.digest('hex');
+        if (generatedSignature !== payment_response.signature) {
+            throw new BadRequestException('Payment Verification Failed!')
+        }
+    }
+
+    async onDepositSuccess(user: User, paymentResponse) {
+        await this.verifyRazorpaySignature(paymentResponse);
+        return await this.connection.transaction(async manager => {
+            const agentRepository = manager.getRepository<Agent>("agent");
+            const txnRepo = manager.getRepository<Transaction>("transaction");
+
+            const txn = await txnRepo.findOne({
+                where: {
+                    txn_code: paymentResponse.order_id
+                }
+            });
+
+            if (txn && (txn.txn_status === TxnStatus.Processing) && (user.agent.id === txn.agent_id)) {
+                await agentRepository.createQueryBuilder()
+                    .update(Agent)
+                    .set({balance: () => `balance + ${txn.amount}`})
+                    .where("id = :id", {id: user.agent.id})
+                    .execute();
+                txn.txn_status = TxnStatus.Successful;
+                await txnRepo.save(txn);
+            } else throw new ConflictException('Payment Verification Failed!');
+        });
     }
 
     withdraw(agent: User, withdrawDto: WithdrawDto) {
@@ -62,12 +104,8 @@ export class AgentService {
         return this.txnRepository.withdraw(agent, withdrawDto.amount, withdrawDto.upi_id, withdrawDto.remark);
     }
 
-    deposit(agent: User, depositDto: DepositDto) {
-        return this.txnRepository.deposit(agent, depositDto.amount, depositDto.txn_time, depositDto.txn_code, depositDto.remark);
-    }
-
-    getSubOrdinateAgents(agent: User, downlineUsername: string) {
-        return this.agentRepository.getSubOrdinateAgents(agent, downlineUsername);
+    getSubOrdinateAgents(agent: User, downlineAgentId: number) {
+        return this.agentRepository.getSubOrdinateAgents(agent, downlineAgentId);
     }
 
     async activateStudents(agent: User, idString: string) {
@@ -75,7 +113,16 @@ export class AgentService {
         const cost = ids.length * 360;
         const commission = ids.length * 120;
         const diff = ids.length * 240;
-        if (cost > agent.agent.balance) throw new ConflictException("Insufficient Wallet Balance");
+
+        if (cost > agent.agent.balance) throw new ConflictException("Insufficient Mulya");
+
+        const alreadyActivatedStudents = await Student.find({
+            where: {
+                id: In(ids),
+                paid_at: Not(IsNull())
+            }
+        });
+        if (alreadyActivatedStudents || alreadyActivatedStudents.length > 0) throw new ConflictException("Some students already activated!, Please refresh!");
 
         const costTxn = new Transaction();
         costTxn.agent_id = agent.agent.id;
@@ -99,14 +146,6 @@ export class AgentService {
             const agentRepository = manager.getRepository<Agent>("agent");
             const txnRepo = manager.getRepository<Transaction>("transaction");
 
-            // const alreadyActivatedStudents = await studentRepository.find({
-            //     where: {
-            //         id: In(ids),
-            //         paid_at: Not(IsNull())
-            //     }
-            // });
-            // if (alreadyActivatedStudents || alreadyActivatedStudents.length > 0) throw new ConflictException("Some students already activated!, Please reopen app!");
-
             await studentRepository.createQueryBuilder()
                 .update(Student)
                 .set({paid_at: new Date()})
@@ -120,7 +159,6 @@ export class AgentService {
                 .execute();
 
             await txnRepo.save([costTxn, commissionTxn])
-
         });
     }
 

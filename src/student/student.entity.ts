@@ -1,11 +1,17 @@
 import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
-import {OneToOne, Timestamp} from "typeorm/index";
+import {OneToOne} from "typeorm/index";
 import {User} from "../auth/user.entity";
 
 @Entity()
 export class Student extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @Column()
+    name: string;
+
+    @Column()
+    dob: string;
 
     @OneToOne(type => User, user => user.student)
     user: User;
@@ -14,28 +20,26 @@ export class Student extends BaseEntity {
     paid_at: Date;
 
     @Column({nullable: true})
-    age_group: string;
+    activation_requested: boolean;
 
     @Column({nullable: true})
-    interests: string;
-
-    @Column()
     ancestor_id: number;
 
     @Column()
     ancestry: string;
 
+    @Column({nullable: true})
+    razorpay_order_id: string;
+
     toSignedInStudent(): SignedInStudent {
         return {
-            age_group: this.age_group,
-            interests: this.interests,
+            name: this.name,
             paid_at: this.paid_at
         }
     }
 }
 
 export interface SignedInStudent {
-    age_group: string,
-    interests: string,
+    name: string,
     paid_at: Date
 }

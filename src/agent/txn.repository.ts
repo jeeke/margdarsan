@@ -20,15 +20,15 @@ export class TxnRepository extends Repository<Transaction> {
         return txn.save();
     }
 
-    withdraw(agent: User, amount: number, upi_id: string, remark: string) {
+    withdraw(user: User, amount: number, upi_id: string, remark: string) {
         const txn = new Transaction();
-        txn.agent_id = agent.agent.id;
+        txn.agent_id = user.agent.id;
         txn.amount = -amount;
         txn.upi_id = upi_id
         txn.txn_time = new Date().toDateString();
         txn.remark = remark;
         txn.txn_status = TxnStatus.Processing;
-        txn.txn_code = `Withdraw ${agent.name}`;
+        txn.txn_code = `Withdraw ${user.agent.name}`;
         return txn.save();
     }
 

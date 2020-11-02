@@ -1,31 +1,26 @@
-import {
-  IsAlphanumeric,
-  IsString, Matches,
-  MaxLength,
-  MinLength
-} from "class-validator";
+import {IsString, Matches, MaxLength, MinLength} from "class-validator";
+import {Optional} from "@nestjs/common";
 
 export class AgentSignupDto {
 
-  @IsString()
-  @MinLength(6)
-  @MaxLength(20)
-  @Matches(
-    /^[A-Za-z0-9_]+$/,
-    { message: 'Username can have a-z A-Z _ only' },
-  )
-  username: string;
+    @IsString()
+    @MinLength(6, {
+            message: 'Referral Code must be minimum of 6 characters'
+        })
+    @MaxLength(20, {
+        message: 'Referral Code can be maximum of 20 characters'
+    })
+    @Matches(
+        /^[A-Za-z0-9]+$/,
+        {message: 'Referral Code can have letters and numbers only'},
+    )
+    my_referral_code: string;
 
-  @IsString()
-  @MinLength(6)
-  @MaxLength(20)
-  @Matches(
-    /^[A-Za-z0-9_]+$/,
-    { message: 'Invalid Referral Code' },
-  )
-  agentCode: string;
+    @IsString()
+    name: string;
 
-  @IsString()
-  name: string;
+    address: string;
+
+    agent_referral_code: string;
 
 }

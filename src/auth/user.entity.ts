@@ -5,22 +5,19 @@ import {UserType} from "./jwt-payload.interface";
 import {ConflictException} from "@nestjs/common";
 
 @Entity()
-@Unique(["username", "phone"])
+@Unique(["phone"])
 export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    username: string;
-
-    @Column({nullable: true})
     phone: string;
 
     @Column({nullable: true})
-    name: string;
+    admin_password: string;
 
-    @Column({nullable: true})
-    otp: string;
+    @Column()
+    is_admin: boolean;
 
     @OneToOne(type => Agent, {
         eager: true,
@@ -35,9 +32,6 @@ export class User extends BaseEntity {
     })
     @JoinColumn()
     student?: Student;
-
-    @Column({nullable: true})
-    is_admin: boolean;
 
     toSignedInUser(userType: string, initialized: boolean): SignedInUser {
         let a = null, s = null;
@@ -55,8 +49,6 @@ export class User extends BaseEntity {
             a = null;
         }
         return {
-            username: this.username,
-            name: this.name,
             phone: this.phone,
             user_type: userType,
             initialized: initialized,
@@ -69,8 +61,6 @@ export class User extends BaseEntity {
 }
 
 export interface SignedInUser {
-    username: string,
-    name: string
     phone: string,
     user_type: string,
     initialized: boolean,

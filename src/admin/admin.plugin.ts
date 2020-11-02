@@ -28,11 +28,11 @@ export async function setupAdminPanel(app: INestApplication): Promise<void> {
         authenticate: async (username, password) => {
             const user = await User.findOne({
                 where: {
-                    username: username
+                    phone: username
                 }
             })
             if (user && user.is_admin) {
-                const matched = await bcrypt.compare(password, user.phone)
+                const matched = await bcrypt.compare(password, user.admin_password)
                 if (matched ) {
                     return user
                 }

@@ -1,4 +1,4 @@
-import {Controller, Get, UseGuards} from "@nestjs/common";
+import {Body, Controller, Get, Post, Put, UseGuards} from "@nestjs/common";
 import {StudentService} from "./student.service";
 import {GetUser} from "../agent/get-user.decorator";
 import {JwtAuthGuard} from "../auth/jwt-auth.guard";
@@ -21,5 +21,30 @@ export class StudentController {
     getDarshikas(@GetUser() user: User) {
         return this.studentService.getDarshikas(user);
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post("/payment/init")
+    initializePayment(@GetUser() user: User) {
+        return this.studentService.initializeSubscription(user);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post("/payment/success")
+    onPaymentDone(@GetUser() user: User, @Body() paymentResponse) {
+        return this.studentService.onPaymentDone(user, paymentResponse);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post("/request-activation")
+    requestActivation(@GetUser() user: User) {
+        return this.studentService.requestActivation(user);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put("/ancestor")
+    updateAncestor(@GetUser() user: User, @Body("referral_code") referralCode: string) {
+        return this.studentService.updateAncestor(user, referralCode);
+    }
+
 
 }
