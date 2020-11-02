@@ -1,11 +1,11 @@
 import {Controller, Get} from '@nestjs/common';
 
-@Controller('api')
+@Controller()
 export class AppController {
     constructor() {
     }
 
-    @Get('/')
+    @Get('api')
     getHello() {
         return {message: "Welcome to Margdarsan API!"}
     }
