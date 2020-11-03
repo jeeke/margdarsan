@@ -23,6 +23,9 @@ jwt:
 #  expiresIn: 3600
 
 razorpay:
-  keyId: 'rzp_live_EwED1ul2Uv65Rt'
-  keySecret: 'zR7ogR4hmkJVtKEC5mrcuvWk'
-  webhookSecret: 'sfjfd$jl@*%KJLHFE#$@@$'
+#  keyId: 'rzp_live_EwED1ul2Uv65Rt'
+#  keySecret: 'zR7ogR4hmkJVtKEC5mrcuvWk'
+#  webhookSecret: 'sfjfd$jl@*%KJLHFE#$@@$'
+  keyId: 'rzp_test_RUpmgSgMUlsx94'
+  keySecret: 'nGzDAwYxGrrdsT6JOAnFT9LY'
+  webhookSecret: 'sahdklH#@$LCDA$#&SLJ!#@RH!K@'

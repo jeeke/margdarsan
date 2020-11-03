@@ -23,12 +23,6 @@ export class Student extends BaseEntity {
     activation_requested: boolean;
 
     @Column({nullable: true})
-    ancestor_id: number;
-
-    @Column()
-    ancestry: string;
-
-    @Column({nullable: true})
     razorpay_order_id: string;
 
     toSignedInStudent(): SignedInStudent {

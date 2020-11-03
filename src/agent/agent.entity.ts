@@ -33,12 +33,6 @@ export class Agent extends BaseEntity {
 
     paid_students: number;
 
-    @Column({nullable: true})
-    ancestor_id: number;
-
-    @Column()
-    ancestry: string;
-
     toSignedInAgent(): SignedInAgent {
         return {
             name: this.name,

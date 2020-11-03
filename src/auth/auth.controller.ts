@@ -29,4 +29,26 @@ export class AuthController {
         return this.authService.initializeStudentProfile(user, studentInitDto);
     }
 
+    @Get("/agents")
+    getAgents() {
+        // return User.createQueryBuilder("user")
+        //     .innerJoinAndSelect("user.agent", "user")
+        //     .where({})
+        //     .andWhere("agent.height = :height", {height: 0})
+        //     .execute();
+        return User.find({
+            join: {
+                alias: 'user',
+                innerJoin: {
+                    agent: 'user.agent'
+                },
+            },
+            where: qb => {
+                qb.where({
+
+                }).andWhere('agent.height = :height', { height: 0 });
+            }
+        });
+    }
+
 }

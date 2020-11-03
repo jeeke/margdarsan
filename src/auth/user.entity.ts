@@ -19,6 +19,12 @@ export class User extends BaseEntity {
     @Column()
     is_admin: boolean;
 
+    @Column({nullable: true})
+    ancestor_id: number;
+
+    @Column()
+    ancestry: string;
+
     @OneToOne(type => Agent, {
         eager: true,
         cascade: true
