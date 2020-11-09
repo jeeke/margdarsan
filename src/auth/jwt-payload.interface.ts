@@ -6,6 +6,6 @@ export interface JwtPayload {
 
 export const UserType = {
     Agent: "agent",
-    Student: "student"
-    // Admin: "admin"
+    Student: "student",
+    Admin: "admin"
 }

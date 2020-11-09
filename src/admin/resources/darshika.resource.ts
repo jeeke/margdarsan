@@ -1,6 +1,6 @@
 import {ResourceWithOptions} from "admin-bro";
-import {User} from "../../auth/user.entity";
-import {Darshika} from "../../student/darshika.entity";
+import {User} from "../../entities/user.entity";
+import {Darshika} from "../../entities/darshika.entity";
 
 const DarshikaResource: ResourceWithOptions = {
     resource: Darshika,

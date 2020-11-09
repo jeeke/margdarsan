@@ -1,6 +1,7 @@
 import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
-import {OneToOne} from "typeorm/index";
-import {User} from "../auth/user.entity";
+import {JoinColumn, OneToOne} from "typeorm/index";
+import {User} from "./user.entity";
+import {Transaction} from "./txn.entity";
 
 @Entity()
 export class Student extends BaseEntity {
@@ -11,7 +12,10 @@ export class Student extends BaseEntity {
     name: string;
 
     @Column()
-    dob: string;
+    dob: Date;
+
+    @Column()
+    category: string;
 
     @OneToOne(type => User, user => user.student)
     user: User;
@@ -22,8 +26,12 @@ export class Student extends BaseEntity {
     @Column({nullable: true})
     activation_requested: boolean;
 
-    @Column({nullable: true})
-    razorpay_order_id: string;
+    @OneToOne(type => Transaction, {
+        cascade: true,
+        eager: true
+    })
+    @JoinColumn()
+    subscription_txn: Transaction;
 
     toSignedInStudent(): SignedInStudent {
         return {

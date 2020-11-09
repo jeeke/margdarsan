@@ -1,32 +1,32 @@
 import {EntityRepository, Repository} from "typeorm";
 import {Logger, UnauthorizedException} from "@nestjs/common";
-import {Agent} from "./agent.entity";
-import {User} from "../auth/user.entity";
+import {Agent} from "../entities/agent.entity";
+import {User} from "../entities/user.entity";
 
 @EntityRepository(Agent)
 export class AgentRepository extends Repository<Agent> {
     private logger = new Logger("AgentRepository");
 
-    async getSubOrdinateAgents(user: User, downlineAgentId: number) {
-        const downline = await this.getUserIfDownline(user, downlineAgentId);
+    async getSubOrdinateAgents(user: User, downlineId: number) {
+        const downline = await this.getUserIfDownline(user, downlineId);
         if (downline) {
-            return await Agent.find({
+            return await User.find({
                 where: {
                     ancestor_id: downline.id,
                 },
-                select: ["id","name"]
+                select: ["agent"]
             });
         } else throw new UnauthorizedException("Network not Accessible");
     }
 
-    async getUserIfDownline(user: User, downlineAgentId: number) {
-        if (!downlineAgentId || user.agent.id === downlineAgentId) return user.agent;
-        const downline = await Agent.findOne({
+    async getUserIfDownline(user: User, downlineId: number) {
+        if (!downlineId || user.id === downlineId) return user;
+        const downline = await User.findOne({
             where: {
-                id: downlineAgentId
+                id: downlineId
             }
         });
-        if (downline && (downline.ancestor_id === user.agent.id) || downline.ancestry.includes(`/${user.agent.id}/`)) {
+        if (downline && (downline.ancestor_id === user.id) || downline.ancestry.includes(`/${user.id}/`)) {
             return downline;
         }
     }

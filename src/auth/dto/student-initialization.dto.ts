@@ -1,5 +1,4 @@
-import {IsNotEmpty, IsString, Matches, MaxLength, MinLength} from "class-validator";
-import {Optional} from "@nestjs/common";
+import {IsDate, IsNotEmpty, IsNumber, IsNumberString, IsString} from "class-validator";
 
 export class StudentInitializationDto {
 
@@ -9,8 +8,12 @@ export class StudentInitializationDto {
     @IsNotEmpty()
     name: string;
 
-    @IsString()
+    @IsNumberString()
     @IsNotEmpty()
     dob: string;
+
+    @IsString()
+    @IsNotEmpty()
+    category: string;
 
 }

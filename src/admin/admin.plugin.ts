@@ -9,8 +9,9 @@ import StudentResource from "./resources/student.resource";
 import TxnResource from "./resources/txn.resource";
 import UserResource from "./resources/user.resource";
 import DarshikaResource from "./resources/darshika.resource";
-import {User} from "../auth/user.entity";
+import {User} from "../entities/user.entity";
 import * as bcrypt from "bcryptjs"
+import {UserType} from "../auth/jwt-payload.interface";
 
 export async function setupAdminPanel(app: INestApplication): Promise<void> {
 
@@ -31,7 +32,7 @@ export async function setupAdminPanel(app: INestApplication): Promise<void> {
                     phone: username
                 }
             })
-            if (user && user.is_admin) {
+            if (user && user.user_type === UserType.Admin) {
                 const matched = await bcrypt.compare(password, user.admin_password)
                 if (matched ) {
                     return user
@@ -39,7 +40,7 @@ export async function setupAdminPanel(app: INestApplication): Promise<void> {
             }
             return false
         },
-        cookiePassword: 'sgfdg@46w&q45$#34va$^)dsgv43',
+        cookiePassword: 'sgfdg#$*NDSU#*$(Q)@46w&q45$#34va$^)dsgv43',
     })
     app.use(adminBro.options.rootPath, router);
 

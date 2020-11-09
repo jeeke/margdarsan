@@ -1,6 +1,6 @@
 import {BaseEntity, Column, Entity, PrimaryGeneratedColumn, Unique} from "typeorm";
 import {OneToOne} from "typeorm/index";
-import {User} from "../auth/user.entity";
+import {User} from "./user.entity";
 
 @Entity()
 @Unique(["referral_code"])
@@ -25,9 +25,6 @@ export class Agent extends BaseEntity {
 
     @Column()
     level: number;
-
-    @Column()
-    height: number;
 
     sub_agents: number;
 

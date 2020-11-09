@@ -1,7 +1,7 @@
 import { ResourceWithOptions } from "admin-bro";
-import { Transaction } from "../../agent/txn.entity";
+import { Transaction } from "../../entities/txn.entity";
 import { NotFoundException } from "@nestjs/common";
-import { Agent } from "../../agent/agent.entity";
+import { Agent } from "../../entities/agent.entity";
 import { getConnection } from "typeorm/index";
 import {TxnStatus} from "../../agent/txn.status";
 
@@ -89,7 +89,7 @@ const TxnResource: ResourceWithOptions = {
 
             await txnRepository.createQueryBuilder()
               .update(Transaction)
-              .set({ txn_status: TxnStatus.Declined })
+              .set({ txn_status: TxnStatus.Failed })
               .where("transaction.id = :id", { id: request.params.recordId })
               .execute();
           } catch (error) {

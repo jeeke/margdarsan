@@ -1,6 +1,6 @@
 import { ResourceWithOptions } from 'admin-bro';
-import { Agent } from '../../agent/agent.entity';
-import { Student } from "../../student/student.entity";
+import { Agent } from '../../entities/agent.entity';
+import { Student } from "../../entities/student.entity";
 
 const StudentResource: ResourceWithOptions = {
   resource: Student,

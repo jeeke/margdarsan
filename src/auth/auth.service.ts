@@ -1,19 +1,20 @@
-import {BadRequestException, ConflictException, Injectable} from "@nestjs/common";
+import {BadRequestException, ConflictException, Injectable, InternalServerErrorException} from "@nestjs/common";
 import {JwtService} from "@nestjs/jwt";
 import * as admin from "firebase-admin";
-import {SignedInUser, User} from "./user.entity";
-import {Agent} from "../agent/agent.entity";
+import {User} from "../entities/user.entity";
+import {Agent} from "../entities/agent.entity";
 import {AgentSignupDto} from "../agent/dto/agent-signup.dto";
 import {JwtPayload, UserType} from "./jwt-payload.interface";
 import {LoginDto} from "./dto/login.dto";
 import {StudentInitializationDto} from "./dto/student-initialization.dto";
-import {Student} from "../student/student.entity";
+import {Student} from "../entities/student.entity";
 
 @Injectable()
 export class AuthService {
     constructor(private jwtService: JwtService
     ) {
     }
+
 
     async login(loginDto: LoginDto): Promise<any> {
         const decodedIdToken = await admin.auth().verifyIdToken(loginDto.token);
@@ -22,10 +23,11 @@ export class AuthService {
                 phone: decodedIdToken.phone_number
             }
         });
-        let r: SignedInUser;
+        let r;
         if (user) {
             r = user.toSignedInUser(loginDto.user_type, true)
         } else {
+            const categories = ["9th", "10th"]
             r = {
                 phone: decodedIdToken.phone_number,
                 user_type: loginDto.user_type,
@@ -34,6 +36,7 @@ export class AuthService {
                 student: null,
                 token: null
             };
+            if (loginDto.user_type === UserType.Student) r.categories = categories
         }
         const payload: JwtPayload = {
             phone: r.phone,
@@ -52,30 +55,40 @@ export class AuthService {
         agent.referral_code = my_referral_code.trim().toLowerCase();
         agent.name = name;
         agent.address = address
-        user.is_admin = false;
+        user.user_type = UserType.Agent;
 
         agent.balance = 0;
         agent.level = 0;
         agent.sub_agents = 0;
         agent.paid_students = 0;
 
-        const ancestor = await Agent.findOne({
-            where: {
-                referral_code: agent_referral_code.trim().toLowerCase()
-            }
-        });
-        if (ancestor) {
-            agent.ancestor_id = ancestor.id;
-            agent.ancestry = `${ancestor.ancestry}${ancestor.id}/`;
-            agent.height = ancestor.height + 1;
-        } else if (agent_referral_code) {
-            throw new BadRequestException("Wrong Referral Code!")
+        if (agent_referral_code) {
+            const ancestor = await Agent.findOne({
+                where: {
+                    referral_code: agent_referral_code.trim().toLowerCase()
+                },
+                relations: ["user"],
+            });
+            if (ancestor) {
+                user.ancestor_id = ancestor.id;
+                user.ancestry = `${ancestor.user.ancestry}${ancestor.user.id}/`;
+                user.height = ancestor.user.height + 1;
+            } else throw new BadRequestException("Wrong Referral Code!")
         } else {
-            agent.ancestry = '/';
-            agent.height = 0;
+            user.ancestry = '/';
+            user.height = 0;
         }
-        user.agent = agent
-        await user.save();
+        try {
+            user.agent = agent
+            await user.save();
+        } catch (e) {
+            if (e.code === "23505") {
+                // duplicate username
+                throw new ConflictException("Username already exists");
+            } else {
+                throw new InternalServerErrorException();
+            }
+        }
 
         const payload: JwtPayload = {
             phone: user.phone,
@@ -92,28 +105,32 @@ export class AuthService {
 
     async initializeStudentProfile(user: User, studentInitDto: StudentInitializationDto) {
         if (user.student) throw new ConflictException("Already Signed Up!")
-        const {agent_referral_code, name, dob} = studentInitDto;
+        const {agent_referral_code, name, dob, category} = studentInitDto;
 
         const student = new Student();
         student.name = name;
-        student.dob = dob;
+        student.dob = new Date(Number(dob));
+        student.category = category
 
-        const ancestor = await Agent.findOne({
-            where: {
-                referral_code: agent_referral_code.trim().toLowerCase()
+        if (agent_referral_code) {
+            const ancestor = await Agent.findOne({
+                where: {
+                    referral_code: agent_referral_code.trim().toLowerCase()
+                },
+                relations: ["user"]
+            });
+            if (ancestor) {
+                user.ancestor_id = ancestor.user.id;
+                user.ancestry = `${ancestor.user.ancestry}${ancestor.user.id}/`;
+            } else if (agent_referral_code) {
+                throw new BadRequestException("Wrong Referral Code!")
             }
-        });
-        if (ancestor) {
-            student.ancestor_id = ancestor.id;
-            student.ancestry = `${ancestor.ancestry}${ancestor.id}/`;
-        } else if (agent_referral_code) {
-            throw new BadRequestException("Wrong Referral Code!")
         } else {
-            student.ancestry = '/';
+            user.ancestry = '/';
         }
 
         user.student = student
-        user.is_admin = false
+        user.user_type = UserType.Student
         await user.save();
 
         const payload: JwtPayload = {

@@ -1,5 +1,5 @@
 export const TxnStatus = {
     Processing: "Processing",
-    Declined: "Failed",
+    Failed: "Failed",
     Successful: "Successful"
 }

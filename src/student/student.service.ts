@@ -1,16 +1,11 @@
-import {BadRequestException, ConflictException, Injectable, Logger} from "@nestjs/common";
+import {BadRequestException, Injectable, Logger} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {StudentRepository} from "./student.repository";
-import {User} from "../auth/user.entity";
-import {Darshika} from "./darshika.entity";
-import * as Razorpay from "razorpay";
-import * as crypto from "crypto";
-import * as config from 'config';
+import {User} from "../entities/user.entity";
+import {Darshika} from "../entities/darshika.entity";
 import {LessThanOrEqual} from "typeorm/index";
-import {Agent} from "../agent/agent.entity";
-
-
-const RazorpayConfig = config.get('razorpay');
+import {Agent} from "../entities/agent.entity";
+import {agent} from "supertest";
 
 @Injectable()
 export class StudentService {
@@ -30,25 +25,69 @@ export class StudentService {
         return sub;
     }
 
+    async getMyDarshikas(paid_at: Date) {
+        return await Darshika.find({
+            where: {
+                serial_no: LessThanOrEqual(this.lastDarshikaNumber(paid_at) + 1)
+            },
+            order: {
+                serial_no: "DESC"
+            }
+        });
+    }
+
+    async updateAncestor(user: User, referralCode: string) {
+        const ancestor = await Agent.findOne({
+            where: {
+                referral_code: referralCode
+            },
+            relations: ["user"]
+        });
+        if (!ancestor) throw new BadRequestException('Wrong Referral Code!')
+        user.ancestor_id = ancestor.user.id
+        user.ancestry = `${ancestor.user.ancestry}${ancestor.user.id}/`;
+        await user.save();
+        return {
+            id: ancestor.id,
+            referral_code: ancestor.referral_code,
+            name: ancestor.name
+        }
+    }
+
+    async requestActivation(user: User) {
+        user.student.activation_requested = true;
+        await user.student.save();
+    }
+
+    // -------------------------------Utilities--------------------------
+
     async getSubscription(user: User) {
         const paid_at = user.student.paid_at
-        if (!paid_at) return {
-            subscribed: false,
-            paid_at: null,
-            expiry: null,
-            next_darshika: null,
-            darshikas: await Darshika.find({
+        if (!paid_at) {
+            const a = await User.findOne({
                 where: {
-                    serial_no: 0
-                }
-            }),
-            ancestor: await Agent.findOne({
-                where: {
-                    id: user.student.ancestor_id
+                    id: user.ancestor_id
                 },
-                select: ["id", "referral_code", "name"]
-            }),
-            activation_requested: user.student.activation_requested
+                relations: ["agent"],
+            });
+            let ancestor = null
+            if (a) {
+                ancestor = {
+                    id: a.id,
+                    name: a.agent.name,
+                    referral_code: a.agent.referral_code
+                }
+            }
+            return {
+                subscribed: false,
+                darshikas: await Darshika.find({
+                    where: {
+                        serial_no: 0
+                    }
+                }),
+                ancestor,
+                activation_requested: user.student.activation_requested
+            }
         }
         const t = paid_at.getTime()
         const begin = new Date(t);
@@ -64,17 +103,6 @@ export class StudentService {
         }
     }
 
-    async getMyDarshikas(paid_at: Date) {
-        return await Darshika.find({
-            where: {
-                serial_no: LessThanOrEqual(this.lastDarshikaNumber(paid_at) + 1)
-            },
-            order: {
-                serial_no: "DESC"
-            }
-        });
-    }
-
     lastDarshikaNumber(paid_at: Date) {
         const now = new Date()
         let months;
@@ -85,58 +113,4 @@ export class StudentService {
         return months <= 0 ? 0 : months;
     }
 
-    async initializeSubscription(user: User) {
-        const subscription = await this.getSubscription(user);
-        if (subscription.subscribed) throw new ConflictException("Already Subscribed!");
-        const instance = new Razorpay({key_id: RazorpayConfig.keyId, key_secret: RazorpayConfig.keySecret});
-
-        const options = {
-            amount: 36000,
-            currency: "INR",
-        };
-        const order = await instance.orders.create(options);
-        user.student.razorpay_order_id = order.order_id;
-        // user.student.paid_at = new Date();
-        await user.student.save();
-        return order;
-    }
-
-    async verifyRazorpaySignature(payment_response) {
-        const hmac = await crypto.createHmac('sha256', RazorpayConfig.keySecret);
-        hmac.update(payment_response.order_id + "|" + payment_response.payment_id);
-        const generatedSignature = await hmac.digest('hex');
-        if (generatedSignature !== payment_response.signature) {
-            throw new BadRequestException('Payment Verification Failed!')
-        }
-    }
-
-    async onPaymentDone(user: User, paymentResponse) {
-        await this.verifyRazorpaySignature(paymentResponse);
-        user.student.paid_at = new Date();
-        user.student.activation_requested = false;
-        await user.student.save();
-    }
-
-    async updateAncestor(user: User, referralCode: string) {
-        const ancestor = await Agent.findOne({
-            where: {
-                referral_code: referralCode
-            }
-        });
-        if (!ancestor) throw new BadRequestException('Wrong Referral Code!')
-        user.student.ancestor_id = ancestor.id
-        user.student.ancestry = `${ancestor.ancestry}${ancestor.id}/`;
-        await user.save();
-        return {
-            id: ancestor.id,
-            referral_code: ancestor.referral_code,
-            name: ancestor.name
-        }
-    }
-
-    async requestActivation(user: User) {
-        user.student.activation_requested = true;
-        await user.student.save();
-        return;
-    }
 }

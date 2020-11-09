@@ -9,7 +9,7 @@ db:
   username: 'postgres'
   password: 'postgres'
   #  change to false in production
-  synchronize: true
+  synchronize: false
 
 jwt:
   secret: 'jfal24dfaee324'
