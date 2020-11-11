@@ -71,7 +71,7 @@ export class AuthService {
             });
             if (ancestor) {
                 user.ancestor_id = ancestor.id;
-                user.ancestry = `${ancestor.user.ancestry}${ancestor.user.id}/`;
+                user.ancestry = `${ancestor.user.ancestry}${ancestor.id}/`;
                 user.height = ancestor.user.height + 1;
             } else throw new BadRequestException("Wrong Referral Code!")
         } else {
@@ -120,8 +120,8 @@ export class AuthService {
                 relations: ["user"]
             });
             if (ancestor) {
-                user.ancestor_id = ancestor.user.id;
-                user.ancestry = `${ancestor.user.ancestry}${ancestor.user.id}/`;
+                user.ancestor_id = ancestor.id;
+                user.ancestry = `${ancestor.user.ancestry}${ancestor.id}/`;
             } else if (agent_referral_code) {
                 throw new BadRequestException("Wrong Referral Code!")
             }

@@ -15,12 +15,12 @@ export class AgentService {
 
     async getDetails(user: User) {
         const team_size = await User.createQueryBuilder("user").where({
-            ancestry: Like(`%/${user.id}/%`),
+            ancestry: Like(`%/${user.agent.id}/%`),
             user_type: UserType.Agent
         }).getCount()
         const student_count = await User.createQueryBuilder("student").where({
             user_type: UserType.Student,
-            ancestor_id: user.id
+            ancestor_id: user.agent.id
         }).getCount()
 
         const r = user.toSignedInUser(UserType.Agent, !!user.agent)
@@ -30,7 +30,7 @@ export class AgentService {
     }
 
     getActivationRequests(user: User) {
-        return this.studentRepository.getActivationRequests(user.id);
+        return this.studentRepository.getActivationRequests(user.agent.id);
     }
 
     getSubOrdinateAgents(agent: User, downlineAgentId: number) {

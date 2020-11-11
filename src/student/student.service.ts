@@ -5,7 +5,6 @@ import {User} from "../entities/user.entity";
 import {Darshika} from "../entities/darshika.entity";
 import {LessThanOrEqual} from "typeorm/index";
 import {Agent} from "../entities/agent.entity";
-import {agent} from "supertest";
 
 @Injectable()
 export class StudentService {
@@ -44,8 +43,8 @@ export class StudentService {
             relations: ["user"]
         });
         if (!ancestor) throw new BadRequestException('Wrong Referral Code!')
-        user.ancestor_id = ancestor.user.id
-        user.ancestry = `${ancestor.user.ancestry}${ancestor.user.id}/`;
+        user.ancestor_id = ancestor.id
+        user.ancestry = `${ancestor.user.ancestry}${ancestor.id}/`;
         await user.save();
         return {
             id: ancestor.id,
@@ -64,18 +63,17 @@ export class StudentService {
     async getSubscription(user: User) {
         const paid_at = user.student.paid_at
         if (!paid_at) {
-            const a = await User.findOne({
+            const a = await Agent.findOne({
                 where: {
                     id: user.ancestor_id
                 },
-                relations: ["agent"],
             });
             let ancestor = null
             if (a) {
                 ancestor = {
                     id: a.id,
-                    name: a.agent.name,
-                    referral_code: a.agent.referral_code
+                    name: a.name,
+                    referral_code: a.referral_code
                 }
             }
             return {
@@ -93,12 +91,14 @@ export class StudentService {
         const begin = new Date(t);
         const expiry = new Date(t);
         const currentDate = new Date();
+        const tomorrow = new Date();
+        tomorrow.setDate(new Date().getDate() + 1);
         expiry.setFullYear(expiry.getFullYear() + 1);
         return {
             subscribed: !!paid_at && (begin < currentDate) && (expiry > currentDate),
             paid_at: new Date(t),
             expiry,
-            next_darshika: new Date(t),
+            next_darshika: tomorrow,
             darshikas: [],
         }
     }

@@ -7,7 +7,7 @@ import {User} from "../entities/user.entity";
 export class StudentRepository extends Repository<Student> {
     private logger = new Logger("StudentRepository");
 
-    async getActivationRequests(userId: number) {
+    async getActivationRequests(agentId: number) {
         return User.createQueryBuilder("user")
             .innerJoinAndSelect(
                 "user.student",
@@ -16,7 +16,7 @@ export class StudentRepository extends Repository<Student> {
                 {y: true}
             ).select(["student.id","user.phone","student.name"])
             .where({
-                ancestor_id: userId
+                ancestor_id: agentId
             }).getMany();
     }
 
