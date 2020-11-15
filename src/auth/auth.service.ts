@@ -27,7 +27,7 @@ export class AuthService {
         if (user) {
             r = user.toSignedInUser(loginDto.user_type, true)
         } else {
-            const categories = ["9th", "10th"]
+            const categories = ["6th","7th","8th","9th", "10th","11th","12th","Undergraduate"]
             r = {
                 phone: decodedIdToken.phone_number,
                 user_type: loginDto.user_type,

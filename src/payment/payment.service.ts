@@ -128,7 +128,7 @@ export class PaymentService {
             const order = await instance.orders.create(options);
             const txn = new Transaction();
             txn.order_id = order.id
-            txn.amount = order.amount
+            txn.amount = order.amount / 100
             txn.txn_status = TxnStatus.Processing
             txn.razorpay_order = JSON.stringify(order);
             txn.user = user
@@ -156,7 +156,37 @@ export class PaymentService {
         await this.verifyRazorpaySignature(paymentResponse);
         user.student.paid_at = new Date();
         user.student.activation_requested = false;
+        user.student.subscription_txn.txn_status  = TxnStatus.Successful;
         await user.student.save();
+
+        return await this.connection.transaction(async manager => {
+
+            const agentRepository = manager.getRepository<Agent>("agent");
+            const txnRepo = manager.getRepository<Transaction>("transaction");
+
+            const ancestor = await agentRepository.findOne({
+                where: {
+                    id: user.ancestor_id,
+                },
+                relations: ['user']
+            })
+            if(ancestor) {
+                const commissionTxn = new Transaction();
+                commissionTxn.user = ancestor.user;
+                commissionTxn.amount = +120;
+                commissionTxn.remark = `Commission - Activation of ${user.student.name}`;
+                commissionTxn.txn_status = TxnStatus.Successful;
+                commissionTxn.order_id = paymentResponse.order_id;
+                await txnRepo.save(commissionTxn);
+
+                await agentRepository.createQueryBuilder()
+                    .update(Agent)
+                    .set({balance: () => `balance + 120`})
+                    .where("id = :id", {id: ancestor.id})
+                    .execute();
+            }
+
+        });
     }
 
     async onDepositSuccess(user: User, paymentResponse) {
@@ -200,14 +230,14 @@ export class PaymentService {
         costTxn.amount = -cost;
         costTxn.remark = `Activation of ${ids.length} student`;
         costTxn.txn_status = TxnStatus.Successful;
-        costTxn.order_id = `Activation of ${idString} student`;
+        costTxn.order_id = `Activation of ${ids.length} student`;
 
         const commissionTxn = new Transaction();
         commissionTxn.user = user;
         commissionTxn.amount = +commission;
         commissionTxn.remark = `Commission - Activation of ${ids.length} student`;
         commissionTxn.txn_status = TxnStatus.Successful;
-        commissionTxn.order_id = `Commission - Activation of ${idString} student`;
+        commissionTxn.order_id = `Commission - Activation of ${ids.length} student`;
 
         return await this.connection.transaction(async manager => {
 

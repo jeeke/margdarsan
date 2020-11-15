@@ -69,7 +69,7 @@ export class StudentService {
                 },
             });
             let ancestor = null
-            if (a) {
+            if (a && a.referral_code != 'margdarsan') {
                 ancestor = {
                     id: a.id,
                     name: a.name,
@@ -92,7 +92,7 @@ export class StudentService {
         const expiry = new Date(t);
         const currentDate = new Date();
         const tomorrow = new Date();
-        tomorrow.setDate(new Date().getDate() + 1);
+        tomorrow.setDate(paid_at.getDate() + 15);
         expiry.setFullYear(expiry.getFullYear() + 1);
         return {
             subscribed: !!paid_at && (begin < currentDate) && (expiry > currentDate),
