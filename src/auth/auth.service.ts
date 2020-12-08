@@ -114,7 +114,7 @@ export class AuthService {
         student.category = category
         student.tags = await Tag.find({
             where: {
-                name: 'universal'
+                tag: 'universal'
             }
         })
 
