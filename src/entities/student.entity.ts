@@ -1,7 +1,8 @@
 import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
-import {JoinColumn, OneToOne} from "typeorm/index";
+import {JoinColumn, JoinTable, ManyToMany, OneToOne} from "typeorm/index";
 import {User} from "./user.entity";
 import {Transaction} from "./txn.entity";
+import {Tag} from "./tag.entity";
 
 @Entity()
 export class Student extends BaseEntity {
@@ -32,6 +33,13 @@ export class Student extends BaseEntity {
     })
     @JoinColumn()
     subscription_txn: Transaction;
+
+    @ManyToMany(type => Tag, t => t.students, {
+        eager: true,
+        cascade: true
+    })
+    @JoinTable()
+    tags: Tag[]
 
     toSignedInStudent(): SignedInStudent {
         return {

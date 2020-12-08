@@ -4,7 +4,7 @@ import {LoginDto} from "./dto/login.dto";
 import {User} from "../entities/user.entity";
 import {AgentSignupDto} from "../agent/dto/agent-signup.dto";
 import {JwtAuthGuard} from "./jwt-auth.guard";
-import {GetAgent, GetStudent} from "../agent/get-user.decorator";
+import {GetAgent, GetStudent} from "./get-user.decorator";
 import {StudentInitializationDto} from "./dto/student-initialization.dto";
 
 @Controller('/api')

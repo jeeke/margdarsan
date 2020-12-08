@@ -1,5 +1,5 @@
-import {Controller, Get, Post, Query, UseGuards, ValidationPipe} from "@nestjs/common";
-import {GetAgent} from "./get-user.decorator";
+import {Controller, Get, Query, UseGuards} from "@nestjs/common";
+import {GetAgent} from "../auth/get-user.decorator";
 import {AgentService} from "./agent.service";
 import {JwtAuthGuard} from "../auth/jwt-auth.guard";
 import {User} from "../entities/user.entity";

@@ -1,6 +1,6 @@
 import {Body, Controller, Get, Post, Put, UseGuards} from "@nestjs/common";
 import {StudentService} from "./student.service";
-import {GetStudent} from "../agent/get-user.decorator";
+import {GetStudent} from "../auth/get-user.decorator";
 import {JwtAuthGuard} from "../auth/jwt-auth.guard";
 import {User} from "../entities/user.entity";
 import {UserType} from "../auth/jwt-payload.interface";
@@ -19,7 +19,7 @@ export class StudentController {
     @UseGuards(JwtAuthGuard)
     @Get("darshika")
     getDarshikas(@GetStudent() user: User) {
-        return this.studentService.getDarshikas(user);
+        return this.studentService.getDarshikasNSubscription(user);
     }
 
     @UseGuards(JwtAuthGuard)

@@ -1,6 +1,6 @@
 import {createParamDecorator, UnauthorizedException} from "@nestjs/common";
 import {User} from "../entities/user.entity";
-import {UserType} from "../auth/jwt-payload.interface";
+import {UserType} from "./jwt-payload.interface";
 
 // export const GetUser = createParamDecorator(async (data, ctx): Promise<User> => {
 //     return ctx.switchToHttp().getRequest().user;

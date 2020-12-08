@@ -4,12 +4,12 @@ server:
 db:
   type: 'postgres'
   database: 'postgres'
-  host: 'margdarsandev.c9zchczwypcl.ap-south-1.rds.amazonaws.com'
+  host: 'postgres.c9zchczwypcl.ap-south-1.rds.amazonaws.com'
   port: 5432
   username: 'postgres'
   password: 'postgres'
   #  change to false in production
-  synchronize: false
+  synchronize: true
 
 jwt:
   secret: 'jfal24dfaee324'

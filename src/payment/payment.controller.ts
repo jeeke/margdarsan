@@ -1,7 +1,7 @@
 import {Body, Controller, Get, Headers, Post, UseGuards, ValidationPipe} from '@nestjs/common';
 import {PaymentService} from "./payment.service";
 import {JwtAuthGuard} from "../auth/jwt-auth.guard";
-import {GetAgent, GetStudent} from "../agent/get-user.decorator";
+import {GetAgent, GetStudent} from "../auth/get-user.decorator";
 import {User} from "../entities/user.entity";
 import {WithdrawDto} from "../agent/dto/withdraw.dto";
 

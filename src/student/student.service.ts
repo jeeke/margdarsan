@@ -2,9 +2,9 @@ import {BadRequestException, Injectable, Logger} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {StudentRepository} from "./student.repository";
 import {User} from "../entities/user.entity";
-import {Darshika} from "../entities/darshika.entity";
-import {LessThanOrEqual} from "typeorm/index";
+import {In} from "typeorm/index";
 import {Agent} from "../entities/agent.entity";
+import {Tag} from "../entities/tag.entity";
 
 @Injectable()
 export class StudentService {
@@ -16,23 +16,25 @@ export class StudentService {
 
     private logger = new Logger("StudentService");
 
-    async getDarshikas(user: User) {
-        const sub = await this.getSubscription(user)
-        if (!sub.subscribed) return sub;
-
-        sub.darshikas = await this.getMyDarshikas(user.student.paid_at);
-        return sub;
+    async getDarshikasNSubscription(user: User) {
+        const darshikas = await this.getMyDarshikas(user)
+        return {...await this.getSubscription(user), darshikas}
     }
 
-    async getMyDarshikas(paid_at: Date) {
-        return await Darshika.find({
+    async getMyDarshikas(user: User) {
+        const tagArray = user.student.tags.map(T => T.tag)
+        const tags = await Tag.find({
+            relations: ["darshikas"],
             where: {
-                serial_no: LessThanOrEqual(this.lastDarshikaNumber(paid_at) + 1)
-            },
-            order: {
-                serial_no: "DESC"
+                tag: In(tagArray)
             }
-        });
+        })
+        const ds = {}
+        tags.forEach(t => t.darshikas.forEach(d => {
+            delete d.tags
+            ds[d.id] = d
+        }))
+        return Object.values(ds)
     }
 
     async updateAncestor(user: User, referralCode: string) {
@@ -69,7 +71,7 @@ export class StudentService {
                 },
             });
             let ancestor = null
-            if (a && a.referral_code != 'margdarsan') {
+            if (a && !(a.referral_code === "margdarsan")) {
                 ancestor = {
                     id: a.id,
                     name: a.name,
@@ -78,11 +80,6 @@ export class StudentService {
             }
             return {
                 subscribed: false,
-                darshikas: await Darshika.find({
-                    where: {
-                        serial_no: 0
-                    }
-                }),
                 ancestor,
                 activation_requested: user.student.activation_requested
             }
@@ -97,20 +94,8 @@ export class StudentService {
         return {
             subscribed: !!paid_at && (begin < currentDate) && (expiry > currentDate),
             paid_at: new Date(t),
-            expiry,
-            next_darshika: tomorrow,
-            darshikas: [],
+            expiry
         }
-    }
-
-    lastDarshikaNumber(paid_at: Date) {
-        const now = new Date()
-        let months;
-        months = (now.getFullYear() - paid_at.getFullYear()) * 12;
-        months -= paid_at.getMonth();
-        months += now.getMonth();
-        months = months > 12 ? 12 : months
-        return months <= 0 ? 0 : months;
     }
 
 }

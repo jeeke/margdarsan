@@ -8,6 +8,7 @@ import {JwtPayload, UserType} from "./jwt-payload.interface";
 import {LoginDto} from "./dto/login.dto";
 import {StudentInitializationDto} from "./dto/student-initialization.dto";
 import {Student} from "../entities/student.entity";
+import {Tag} from "../entities/tag.entity";
 
 @Injectable()
 export class AuthService {
@@ -27,7 +28,7 @@ export class AuthService {
         if (user) {
             r = user.toSignedInUser(loginDto.user_type, true)
         } else {
-            const categories = ["6th","7th","8th","9th", "10th","11th","12th","Undergraduate"]
+            const categories = ["6th", "7th", "8th", "9th", "10th", "11th", "12th", "Undergraduate"]
             r = {
                 phone: decodedIdToken.phone_number,
                 user_type: loginDto.user_type,
@@ -111,6 +112,11 @@ export class AuthService {
         student.name = name;
         student.dob = new Date(Number(dob));
         student.category = category
+        student.tags = await Tag.find({
+            where: {
+                name: 'universal'
+            }
+        })
 
         if (agent_referral_code) {
             const ancestor = await Agent.findOne({
